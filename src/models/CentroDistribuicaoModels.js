@@ -15,7 +15,7 @@ class CentroDistribuicao {
     FROM centros_distribuicao c
     LEFT JOIN usuarios u ON u.centro_id = c.id AND u.tipo = 'ADMIN'
     GROUP BY c.id, c.nome, c.endereco, c.cidade, c.telefone
-    ORDER BY c.nome DESC
+    ORDER BY c.id DESC
   `;
   const { rows } = await db.query(query);
   return rows;
