@@ -1,0 +1,20 @@
+const { Router } = require('express');
+const router = Router();
+const Necessidades = require('../controllers/NecessidadesController');
+const authMiddleware = require('../middlewares/auth');
+const adminOnly = require('../middlewares/adminOnly'); 
+const schemas = require('../middlewares/validations/schemas');
+
+// Rota principal do Dashboard de Doações
+router.get('/', Necessidades.index);
+
+// Rota para o Admin incluir novas demandas críticas
+router.post('/', authMiddleware, adminOnly, Necessidades.store);
+
+// Rota para atualizar quantidades (ex: quando chegam os fardos de água)
+router.put('/:id', authMiddleware, adminOnly, Necessidades.update);
+
+// Rota para deletar uma necessidade (ex: quando a demanda é atendida no objetivoa)
+router.delete('/:id', authMiddleware, adminOnly, Necessidades.delete);
+
+module.exports = router;

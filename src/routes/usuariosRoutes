@@ -1,0 +1,24 @@
+const { Router } = require('express');
+const router = Router();
+const Usuarios = require('../controllers/UsuariosController');
+const authMiddleware = require('../middlewares/auth');
+const adminOnly = require('../middlewares/adminOnly');
+const validate = require('../middlewares/validator');
+const schemas = require('../middlewares/validations/schemas');
+
+// Criar conta (Público)
+router.post('/', validate(schemas.usuario), Usuarios.store);
+
+router.post('/login', validate(schemas.login), Usuarios.login);
+
+// Listar usuarios
+router.get('/', authMiddleware,Usuarios.index);
+router.get('/:id', authMiddleware,Usuarios.show);
+
+// Atualizar conta
+router.put('/:id', authMiddleware, adminOnly, validate(schemas.usuario), Usuarios.update);
+
+//deletar conta
+router. delete('/:id', authMiddleware, adminOnly, Usuarios.delete);
+
+module.exports = router;
