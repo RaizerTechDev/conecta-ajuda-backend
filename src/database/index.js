@@ -7,6 +7,8 @@ const pool = new Pool({
   database: process.env.DB_DATABASE,
   password: String(process.env.DB_PASSWORD), // Forçar string ajuda a debugar
   port: process.env.DB_PORT,
+  // Só ativa SSL se não estiver em ambiente de desenvolvimento local
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
 // Teste de conexão (Opcional, mas ajuda muito no log)
