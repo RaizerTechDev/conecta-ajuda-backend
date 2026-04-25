@@ -1,22 +1,17 @@
-require('dotenv').config(); // Isso deve estar no topo do arquivo!
+require('dotenv').config();
 const { Pool } = require('pg');
 
+// No Render, a variável DATABASE_URL já vem com tudo (user, senha, host, porta)
 const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_DATABASE,
-  password: String(process.env.DB_PASSWORD), // Forçar string ajuda a debugar
-  port: process.env.DB_PORT,
-  // Só ativa SSL se não estiver em ambiente de desenvolvimento local
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  connectionString: process.env.DATABASE_URL,
+  // Forçamos o SSL se não estiver em localhost, pois o Render exige
+  ssl: process.env.DB_HOST === 'localhost' ? false : { rejectUnauthorized: false }
 });
 
-// Teste de conexão (Opcional, mas ajuda muito no log)
 pool.on('connect', () => {
   console.log('🐘 PostgreSQL conectado com sucesso!');
 });
 
-// Exporta uma função de consulta para ser usada em outros arquivos
 module.exports = {
   query: (text, params) => pool.query(text, params),
 };
