@@ -5,7 +5,7 @@ const authMiddleware = require('../middlewares/auth');
 const adminOnly = require('../middlewares/adminOnly'); 
 const schemas = require('../middlewares/validations/schemas');
 
-// Rota principal do Dashboard de Doações
+// Rota principal do Dashboard de Lista de Doações
 router.get('/', Necessidades.index);
 
 // Rota para o Admin incluir novas demandas críticas

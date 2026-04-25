@@ -44,9 +44,10 @@ class CentroDistribuicao {
   }
   
   async delete(id) {
-    await db.query('DELETE FROM centros_distribuicao WHERE id = $1', [id]);
-    return true;
+    await db.query('DELETE FROM centros_distribuicao WHERE id = $1', [id]);      
+  // Retorna true se algo foi deletado (1 ou mais), ou false se nada foi deletado (0)
+  return result.rowCount > 0;
   }
-}
+ }
 
 module.exports = new CentroDistribuicao();

@@ -79,7 +79,8 @@ async create(data) {
 
  async delete(id) {
        await db.query('DELETE FROM registro_doacoes WHERE id = $1', [id]);
-      return true;
+      // Retorna true se algo foi deletado (1 ou mais), ou false se nada foi deletado (0)
+  return result.rowCount > 0;
   }
 }
 

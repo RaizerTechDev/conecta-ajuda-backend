@@ -44,10 +44,12 @@ async findById(id) {
   return rows[0];
 }
 
-  async delete(id) {
-     await db.query('DELETE FROM usuarios WHERE id = $1', [id]);
-     return true;
-   }
+async delete(id) {
+  // O result contém informações sobre a execução da query
+  const result = await db.query('DELETE FROM usuarios WHERE id = $1', [id]);  
+  // Retorna true se algo foi deletado (1 ou mais), ou false se nada foi deletado (0)
+  return result.rowCount > 0;
+  }
 }
 
 module.exports = new Usuario();

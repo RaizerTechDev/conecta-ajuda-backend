@@ -118,7 +118,7 @@ async delete(req, res) {
 
     // Verificação de segurança: Só ADMIN apaga
     if (req.userTipo !== 'ADMIN') {
-      return res.status(403).json({ error: 'Acesso negado. Apenas administradores podem remover centros.' });
+      return res.status(403).json({ error: 'Acesso negado. Apenas administradores podem remover usuarios.' });
     }
 
     const removido = await UsuarioModels.delete(id);
