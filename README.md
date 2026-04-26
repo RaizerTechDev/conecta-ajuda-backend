@@ -28,6 +28,38 @@ Este projeto foi desenvolvido como parte do Desafio Técnico Final focado em des
 
 ---
 
+## ⚙️ Funcionalidades Principais
+
+👤 Gestão de Usuários e Acesso
+Níveis de Acesso: Diferenciação clara entre ADMIN (gestores de centros) e DOADORES.
+
+Segurança: Senhas protegidas com bcrypt e sessões gerenciadas via tokens JWT.
+
+Vínculo Logístico: Administradores são vinculados a Centros de Distribuição (CD) específicos via centro_id.
+
+📦 Dashboard de Necessidades
+Cálculo de Prioridade Automático: Algoritmo que prioriza itens com base na diferença entre a quantidade atual e o objetivo.
+
+Métricas de Progresso: Cálculo em tempo real da porcentagem de conclusão de cada necessidade.
+
+Agrupamento Inteligente: Uso de STRING_AGG para listar todos os responsáveis por um centro em uma única consulta, otimizando a performance.
+
+🤝 Fluxo de Doação "Xeque-Mate"
+Intenção de Doação: Doadores registram o que pretendem levar, gerando um status PENDENTE.
+
+Itens Fora da Lista: Flexibilidade para doar itens que ainda não foram mapeados (ex: Cobertores), permitindo que a logística se adapte à solidariedade.
+
+Confirmação de Recebimento: O estoque só é atualizado quando o ADMIN confirma a chegada física do item, mudando o status para ENTREGUE.
+
+Integridade de Dados: Bloqueio de remoção de itens que possuem histórico de doações vinculadas, garantindo auditoria.
+
+📊 Painel de Impacto Público
+Estatísticas Globais: Rota pública que expõe o total de itens arrecadados e o número de causas concluídas.
+
+Transparência: Exibição clara de quem está gerenciando cada necessidade no local.
+
+---- 
+
 ## 🚀 Como consumir a API
 
 **Base URL:**
