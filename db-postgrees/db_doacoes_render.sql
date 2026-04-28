@@ -133,35 +133,20 @@ INSERT INTO registro_doacoes (usuario_id, necessidade_id, quantidade_doada, stat
 (6, 4, 5, 'PENDENTE'), -- O Doador 3 prometeu 5 fardos de agua  para a necessidade 4
 (10, 5, 10, 'ENTREGUE');  -- O Doador 3 já entregou 10 fardos de detergente a necessidade 5
 
-SELECT * FROM registro_doacoes ORDER BY status ASC, data_intencao DESC;
+SELECT *  FROM registro_doacoes
 
-/*Aqui o usuário consulta o que está doando e como está o processo, 
-filtrando por nome ao invés do ID.*/
-SELECT 
-	u.nome AS doador,
-    c.nome AS centro_destino,
-    n.item_nome AS item, 
-    rd.quantidade_doada, 
-    rd.status, 
-    rd.data_intencao
-FROM registro_doacoes rd
-JOIN usuarios u ON rd.usuario_id = u.id
-JOIN necessidades n ON rd.necessidade_id = n.id
-JOIN centros_distribuicao c ON n.centro_id = c.id 
-
-
-/*   Consulta detalhada para o (ADM) de doações vinculando nomes de 
-usuários, itens e destinos e filtra pedindo ao banco o que está pendente
-e ordena pela data de intenção mais recente .*/
+-- Admin tem acesso a consulta de pendente para alterar status 
 
 SELECT 
     rd.id AS registro_id,
-    u.nome AS doador, 
-    n.item_nome AS item_doado, 
-    rd.quantidade_doada, 
-    rd.data_intencao
+    u.nome AS doador,  
+  n.item_nome, 
+rd.item_avulso_nome AS item_doado, 
+    rd.quantidade_doada,
+    rd.data_intencao,
+    rd.status
 FROM registro_doacoes rd
 JOIN usuarios u ON rd.usuario_id = u.id
-JOIN necessidades n ON rd.necessidade_id = n.id
-WHERE rd.status = 'PENDENTE' 
+-- Aqui você deve usar o nome exato da sua tabela de necessidades
+LEFT JOIN necessidades n ON rd.necessidade_id = n.id 
 ORDER BY rd.data_intencao DESC;
