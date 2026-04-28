@@ -9,8 +9,7 @@ async create(data) {
       necessidade_id, 
       usuario_id, 
      item_avulso_nome, 
-      quantidade_doada, 
-     
+      quantidade_doada,      
       status
     )
     VALUES ($1, $2, $3, $4, 'PENDENTE') 

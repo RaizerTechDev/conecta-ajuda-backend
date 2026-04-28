@@ -7,8 +7,7 @@ const app = express();
 
 // MIDDLEWARES GLOBAIS
 app.use(express.json());
-app.use(cors());
-
+app.use(cors({ origin: 'https://conecta-ajuda-frontend.vercel.app/' }));
 // CONFIGURAÇÃO DAS VIEWS
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
