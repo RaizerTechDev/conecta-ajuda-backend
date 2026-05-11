@@ -65,15 +65,66 @@ class Necessidade {
   }
 
   async update(id, data) {
-    const { item_nome, quantidade_objetivo, quantidade_atual, prioridade, status } = data;
+  const { item_nome, quantidade_objetivo, quantidade_atual, prioridade, status, categoria_nome } = data;
+
+  try {
+    // 1. Lógica de Categoria (Igual ao Create)
+    // Usamos TRIM e LOWER para garantir a comparação
+    let catQuery = await db.query(
+      'SELECT id FROM categorias WHERE LOWER(TRIM(nome)) = LOWER(TRIM($1))', 
+      [categoria_nome]
+    );
+    console.log("Categoria ID encontrada:", catQuery.rows[0]?.id);
+    
+    let categoria_id;
+
+    if (catQuery.rows.length > 0) {
+      categoria_id = catQuery.rows[0].id;
+    } else {
+      // Se o admin editou o nome da categoria para algo que não existe, cria na hora
+      const newCat = await db.query(
+        'INSERT INTO categorias (nome) VALUES (TRIM($1)) RETURNING id', 
+        [categoria_nome]
+      );
+      categoria_id = newCat.rows[0].id;
+    }
+
+    // 2. Executa o Update na tabela necessidades
+    // IMPORTANTE: Verifique se o nome da coluna no banco é categoria_id
     const query = `
       UPDATE necessidades 
-      SET item_nome = $1, quantidade_objetivo = $2, quantidade_atual = $3, prioridade = $4, status = $5
-      WHERE id = $6 RETURNING *
+      SET item_nome = $1, 
+          quantidade_objetivo = $2, 
+          quantidade_atual = $3, 
+          prioridade = $4, 
+          status = $5, 
+          categoria_id = $6
+      WHERE id = $7 
+      RETURNING *
     `;
-    const { rows } = await db.query(query, [item_nome, quantidade_objetivo, quantidade_atual, prioridade, status , id]);
+    
+    const values = [
+      item_nome, 
+      quantidade_objetivo, 
+      quantidade_atual, 
+      prioridade, 
+      status, 
+      categoria_id, 
+      id
+    ];
+
+    const { rows } = await db.query(query, values);
+    
+    if (rows.length === 0) {
+        throw new Error("Necessidade não encontrada para atualizar.");
+    }
+
     return rows[0];
+  } catch (error) {
+    console.error("Erro no Update do Model:", error);
+    throw error;
   }
+}
 
    async delete(id) {
   // Em vez de apagar, apenas "esconde" a necessidade
