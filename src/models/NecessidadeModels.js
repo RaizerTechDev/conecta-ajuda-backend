@@ -3,7 +3,8 @@ const db = require('../database');
 class Necessidade {
  async findAll() {
   const query = `
-    SELECT 
+
+SELECT 
       n.id AS necessidade_id,
       c.nome AS centro_distribuicao_nome, 
       -- Agrupa os nomes dos administradores em uma única coluna
@@ -23,8 +24,7 @@ class Necessidade {
     LEFT JOIN usuarios u ON u.centro_id = c.id AND u.tipo = 'ADMIN'
     GROUP BY 
         n.id, c.nome, c.endereco, cat.nome, n.item_nome, n.quantidade_atual, n.quantidade_objetivo, n.prioridade, n.status
-    ORDER BY 
-      status ASC,
+    ORDER BY   
       
       CASE n.prioridade 
         WHEN 'CRITICA' THEN 1 
