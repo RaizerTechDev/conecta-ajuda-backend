@@ -82,33 +82,41 @@ INSERT INTO necessidades (centro_id, categoria_id, item_nome, quantidade_objetiv
 -- Adicionar coluna status na tabela necessidades para indicar se a necessidade está ativa ou já foi atendida
 ALTER TABLE necessidades ADD COLUMN status VARCHAR(20) DEFAULT 'ATIVO';
 -- Consultar a tabela necessidades
-SELECT * FROM necessidades
+SELECT * FROM necessidades;
 
 /* Consultar a tabela com Join para junta as três tabelas para mostrar
 nomes em vez de apenas IDs: usando Decimal para garantir que o resultado
 não seja zero e ROUND para ficar bonito*/
 
+
 SELECT 
-    n.id AS necessidade_id,
-    c.nome AS centro_distribuicao_nome, 
-    cat.nome AS categorias,
-    n.item_nome,
-    n.quantidade_atual,
-    n.quantidade_objetivo,
-	 -- Usamos ::DECIMAL para garantir que o resultado não seja zero e ROUND para ficar bonito
-    ROUND((n.quantidade_atual::DECIMAL / n.quantidade_objetivo::DECIMAL) * 100, 2)
-	AS porcentagem_concluida,
-    n.prioridade   
-FROM necessidades n
-JOIN centros_distribuicao c ON n.centro_id = c.id
-JOIN categorias cat ON n.categoria_id = cat.id
-ORDER BY 
-    CASE n.prioridade 
+      n.id AS necessidade_id,
+      c.nome AS centro_distribuicao_nome, 
+      -- Agrupa os nomes dos administradores em uma única coluna
+        STRING_AGG(u.nome, ', ') AS administradores_responsaveis,
+        c.endereco,
+      cat.nome AS categorias,
+      n.item_nome,
+      n.quantidade_atual,
+      n.quantidade_objetivo,
+      ROUND((n.quantidade_atual::DECIMAL / NULLIF(n.quantidade_objetivo, 0)::DECIMAL) * 100, 2) AS porcentagem_concluida,
+       n.status, 
+      n.prioridade
+         
+    FROM necessidades n
+    JOIN centros_distribuicao c ON n.centro_id = c.id
+    JOIN categorias cat ON n.categoria_id = cat.id
+    LEFT JOIN usuarios u ON u.centro_id = c.id AND u.tipo = 'ADMIN'
+    GROUP BY 
+        n.id, c.nome, c.endereco, cat.nome, n.item_nome, n.quantidade_atual, n.quantidade_objetivo, n.prioridade, n.status
+    ORDER BY   
+      
+      CASE n.prioridade 
         WHEN 'CRITICA' THEN 1 
         WHEN 'ALTA' THEN 2 
         WHEN 'MEDIA' THEN 3 
         WHEN 'BAIXA' THEN 4 
-    END;
+      END;
 
 -- Criação da tabelaRegistro de Doações 
 CREATE TABLE registro_doacoes (
