@@ -5,33 +5,35 @@ class Necessidade {
   const query = `
 
 SELECT 
-      n.id AS necessidade_id,
-      c.nome AS centro_distribuicao_nome, 
-      -- Agrupa os nomes dos administradores em uma única coluna
-        STRING_AGG(u.nome, ', ') AS administradores_responsaveis,
-        c.endereco,
-      cat.nome AS categorias,
-      n.item_nome,
-      n.quantidade_atual,
-      n.quantidade_objetivo,
-      ROUND((n.quantidade_atual::DECIMAL / NULLIF(n.quantidade_objetivo, 0)::DECIMAL) * 100, 2) AS porcentagem_concluida,
-       n.status, 
-      n.prioridade
-         
-    FROM necessidades n
-    JOIN centros_distribuicao c ON n.centro_id = c.id
-    JOIN categorias cat ON n.categoria_id = cat.id
-    LEFT JOIN usuarios u ON u.centro_id = c.id AND u.tipo = 'ADMIN'
-    GROUP BY 
-        n.id, c.nome, c.endereco, cat.nome, n.item_nome, n.quantidade_atual, n.quantidade_objetivo, n.prioridade, n.status
-    ORDER BY   
-      
-      CASE n.prioridade 
+    n.id AS necessidade_id,
+    c.nome AS centro_distribuicao_nome, 
+    cat.nome AS categorias,
+    n.item_nome,
+    n.quantidade_atual,
+    n.quantidade_objetivo,
+    n.status,
+    ROUND((n.quantidade_atual::DECIMAL / n.quantidade_objetivo::DECIMAL) * 100, 2) AS porcentagem_concluida,
+    n.prioridade   
+FROM necessidades n
+JOIN centros_distribuicao c ON n.centro_id = c.id
+JOIN categorias cat ON n.categoria_id = cat.id
+ORDER BY 
+    -- 1º CRITÉRIO: Status (Garante que ATIVO fique acima de CONCLUIDO)
+    CASE 
+        WHEN n.status = 'ATIVO' THEN 1 
+        ELSE 2 
+    END ASC,
+    
+    -- 2º CRITÉRIO: Prioridade (Ordena dentro de cada grupo de status)
+    CASE n.prioridade 
         WHEN 'CRITICA' THEN 1 
-        WHEN 'ALTA' THEN 2 
-        WHEN 'MEDIA' THEN 3 
-        WHEN 'BAIXA' THEN 4 
-      END;
+        WHEN 'ALTA'    THEN 2 
+        WHEN 'MEDIA'   THEN 3 
+        WHEN 'BAIXA'   THEN 4 
+        ELSE 5
+    END ASC,
+    
+    n.item_nome ASC;
   `;
   const { rows } = await db.query(query);
   return rows;
@@ -66,6 +68,8 @@ SELECT
 
   async update(id, data) {
   const { item_nome, quantidade_objetivo, quantidade_atual, prioridade, status, categoria_nome } = data;
+
+  const novoStatus = Number(quantidade_atual) >= Number(quantidade_objetivo) ? 'CONCLUIDO' : 'ATIVO';
 
   try {
     // 1. Lógica de Categoria (Igual ao Create)
@@ -108,7 +112,7 @@ SELECT
       quantidade_objetivo, 
       quantidade_atual, 
       prioridade, 
-      status, 
+      novoStatus, 
       categoria_id, 
       id
     ];
