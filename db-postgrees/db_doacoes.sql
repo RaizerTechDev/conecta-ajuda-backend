@@ -5,6 +5,7 @@ CREATE TABLE usuarios (
     email VARCHAR(100) UNIQUE NOT NULL,
     senha VARCHAR(255) NOT NULL,
     tipo VARCHAR(20) CHECK (tipo IN ('ADMIN', 'DOADOR')) DEFAULT 'DOADOR',
+	centro_id INTEGER REFERENCES centros_distribuicao(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -114,10 +115,10 @@ CREATE TABLE registro_doacoes (
     id SERIAL PRIMARY KEY,
     usuario_id INTEGER REFERENCES usuarios(id), 
     necessidade_id INTEGER REFERENCES necessidades(id), 
+	item_avulso_nome VARCHAR(250),
     quantidade_doada INTEGER NOT NULL, 
     status VARCHAR(20) CHECK (status IN ('PENDENTE', 'ENTREGUE', 'CANCELADO')) DEFAULT 'PENDENTE',
-    data_intencao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_entrega_real TIMESTAMP 
+    data_intencao TIMESTAMP DEFAULT CURRENT_TIMESTAMP    
 );
 
 -- Deletando Coluna Data Entrega Real
@@ -133,6 +134,7 @@ INSERT INTO registro_doacoes (usuario_id, necessidade_id, quantidade_doada, stat
 (10, 5, 10, 'ENTREGUE');  -- O Doador 3 já entregou 10 fardos de detergente a necessidade 5
 
 SELECT * FROM registro_doacoes ORDER BY status ASC, data_intencao DESC;
+
 /*Aqui o usuário consulta o que está doando e como está o processo, 
 filtrando por nome ao invés do ID.*/
 SELECT 
@@ -149,7 +151,7 @@ JOIN centros_distribuicao c ON n.centro_id = c.id
 
 
 /*   Consulta detalhada para o (ADM) de doações vinculando nomes de 
-usuários, itens e destinos e filtra pedindo ao banco o que está pendente
+usuários, itens e destinos e filtra pedindo ao banco o que está  pendent
 e ordena pela data de intenção mais recente .*/
 
 SELECT 
@@ -161,5 +163,5 @@ SELECT
 FROM registro_doacoes rd
 JOIN usuarios u ON rd.usuario_id = u.id
 JOIN necessidades n ON rd.necessidade_id = n.id
-WHERE rd.status = 'PENDENTE' 
+WHERE rd.status = 'E' 
 ORDER BY rd.data_intencao DESC;

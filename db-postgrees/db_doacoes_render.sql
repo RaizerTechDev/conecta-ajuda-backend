@@ -82,7 +82,7 @@ INSERT INTO necessidades (centro_id, categoria_id, item_nome, quantidade_objetiv
 -- Adicionar coluna status na tabela necessidades para indicar se a necessidade está ativa ou já foi atendida
 ALTER TABLE necessidades ADD COLUMN status VARCHAR(20) DEFAULT 'ATIVO';
 -- Consultar a tabela necessidades
-SELECT * FROM necessidades
+SELECT*  FROM necessidades
 
 /* Consultar a tabela com Join para junta as três tabelas para mostrar
 nomes em vez de apenas IDs: usando Decimal para garantir que o resultado
