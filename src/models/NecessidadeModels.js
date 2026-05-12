@@ -131,6 +131,7 @@ ORDER BY
 }
 
    async delete(id) {
+    
   // Em vez de apagar, apenas "esconde" a necessidade
   const query = "UPDATE necessidades SET status = 'CONCLUIDO' WHERE id = $1 RETURNING id";
   const { rows } = await db.query(query, [id]);
