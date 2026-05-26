@@ -1,5 +1,7 @@
 SELECT * FROM usuarios
 
+SELECT * FROM usuarios WHERE id = 2
+
 SELECT * FROM necessidades
 
 SELECT 
