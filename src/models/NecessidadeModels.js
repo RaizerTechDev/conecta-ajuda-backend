@@ -16,10 +16,11 @@ async findAll() {
         ROUND((n.quantidade_atual::DECIMAL / n.quantidade_objetivo::DECIMAL) * 100, 2) AS porcentagem_concluida,
         n.prioridade,
         (
-          SELECT STRING_AGG(u.nome, ', ') 
-          FROM usuarios u 
-          WHERE u.centro_id = c.id AND u.tipo = 'ADMIN'
-        ) AS administradores_responsafeis
+        SELECT COALESCE(STRING_AGG(u.nome, ', '), 'Sem Admin Vinculado') 
+        FROM usuarios u 
+        WHERE u.centro_id = c.id AND u.tipo = 'ADMIN'
+      ) AS administradores_responsaveis
+        
     FROM necessidades n
     JOIN centros_distribuicao c ON n.centro_id = c.id
     JOIN categorias cat ON n.categoria_id = cat.id
