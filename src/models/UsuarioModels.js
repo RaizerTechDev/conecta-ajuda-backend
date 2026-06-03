@@ -45,16 +45,16 @@ async findById(id) {
 }
    
 async delete(id) {
-  // 1. Limpa primeiro as doações vinculadas a esse ID usando a conexão 'db' que já existe aqui
-  await db.query('DELETE FROM doacoes WHERE usuario_id = $1', [id]);  
+  // 1. Altera 'doacoes' para 'registro_doacoes' (nome real da tabela no banco)
+  await db.query('DELETE FROM registro_doacoes WHERE usuario_id = $1', [id]);  
 
-  // 2. Agora deleta o usuário
+  // 2. Agora o ID do usuário está liberado para remoção
   const result = await db.query('DELETE FROM usuarios WHERE id = $1', [id]);  
   
-  // Retorna true se deletou, false se não encontrou
+  // Retorna true se deletou com sucesso
   return result.rowCount > 0;
- }
- 
+}
+
 }
 
 module.exports = new Usuario();
