@@ -121,23 +121,23 @@ async delete(req, res) {
       return res.status(403).json({ error: 'Acesso negado. Apenas administradores podem remover usuarios.' });
     }
 
+    // 1. ANTES DE DELETAR O USUÁRIO: Remove as doações vinculadas a esse ID
+    // Importante: mude 'usuario_id' para o nome exato da coluna FK na sua tabela doacoes
+    await db.query('DELETE FROM doacoes WHERE usuario_id = $1', [id]);
+
+    // 2. Agora o ID está livre de vínculos. Deleta o usuário.
     const removido = await UsuarioModels.delete(id);
 
     if (!removido) {
       return res.status(404).json({ error: 'Usuário não encontrado.' });
     }
 
-    return res.json({ message: 'Usuário removido com sucesso!' });
+    return res.json({ message: 'Usuário e histórico removidos com sucesso! Pronto para novo cadastro.' });
   } catch (err) {
-   // Se o usuário tiver doações vinculadas, o banco pode dar erro de chave estrangeira (FK)
-    return res.status(500).json({ 
-      error: 'Não é possível remover o usuário!' 
-      });
-    }
-  }
-
+    console.error("Erro ao deletar usuário:", err);
+    return res.status(500).json({ error: 'Erro interno ao tentar remover o usuário.' });
+   }
+ }
 }
-
-
 
 module.exports = new UsuariosController();
