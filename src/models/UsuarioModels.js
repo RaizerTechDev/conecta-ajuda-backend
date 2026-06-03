@@ -43,13 +43,18 @@ async findById(id) {
   const { rows } = await db.query(query, values);
   return rows[0];
 }
-
+   
 async delete(id) {
-  // O result contém informações sobre a execução da query
+  // 1. Limpa primeiro as doações vinculadas a esse ID usando a conexão 'db' que já existe aqui
+  await db.query('DELETE FROM doacoes WHERE usuario_id = $1', [id]);  
+
+  // 2. Agora deleta o usuário
   const result = await db.query('DELETE FROM usuarios WHERE id = $1', [id]);  
-  // Retorna true se algo foi deletado (1 ou mais), ou false se nada foi deletado (0)
+  
+  // Retorna true se deletou, false se não encontrou
   return result.rowCount > 0;
-  }
+ }
+ 
 }
 
 module.exports = new Usuario();
