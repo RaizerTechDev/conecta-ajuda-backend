@@ -1,2 +1,3 @@
 node_modules/
-.envgcm-diagnose.log
+.env
+gcm-diagnose.log
