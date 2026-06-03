@@ -112,32 +112,37 @@ async update(req, res) {
 }
 
 // Rota DELETE /usuarios/:id - Remover um usuário
+
 async delete(req, res) {
   try {
     const { id } = req.params;
 
-    // Verificação de segurança: Só ADMIN apaga
     if (req.userTipo !== 'ADMIN') {
       return res.status(403).json({ error: 'Acesso negado. Apenas administradores podem remover usuarios.' });
     }
 
-    // 1. ANTES DE DELETAR O USUÁRIO: Remove as doações vinculadas a esse ID
-    // Importante: mude 'usuario_id' para o nome exato da coluna FK na sua tabela doacoes
+    // Limpa doações vinculadas
     await db.query('DELETE FROM doacoes WHERE usuario_id = $1', [id]);
 
-    // 2. Agora o ID está livre de vínculos. Deleta o usuário.
+    // Remove o usuário
     const removido = await UsuarioModels.delete(id);
 
     if (!removido) {
       return res.status(404).json({ error: 'Usuário não encontrado.' });
     }
 
-    return res.json({ message: 'Usuário e histórico removidos com sucesso! Pronto para novo cadastro.' });
+    return res.json({ message: 'Usuário e histórico removidos com sucesso!' });
   } catch (err) {
-    console.error("Erro ao deletar usuário:", err);
-    return res.status(500).json({ error: 'Erro interno ao tentar remover o usuário.' });
-   }
- }
+    console.error("ERRO CRÍTICO NO DELETE:", err); // Garante o print no Render
+    
+    // RETORNA O ERRO REAL DIRETO NO POSTMAN
+    return res.status(500).json({ 
+      error: 'Erro interno ao tentar remover o usuário.',
+      mensagemDoBanco: err.message, // <- Isso vai nos dar a resposta exata
+      detalhes: err
+    });
+  }
 }
 
+}
 module.exports = new UsuariosController();
