@@ -63,7 +63,7 @@ Transparência: Exibição clara de quem está gerenciando cada necessidade no l
 ## 🚀 Como consumir a API
 
 **Base URL:**
-https://conecta-ajuda-backend.onrender.com/
+https://conecta-ajuda-backend-qw7b.onrender.com/lista-necessidades
 
 ---
 
